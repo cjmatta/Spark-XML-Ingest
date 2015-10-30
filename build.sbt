@@ -2,7 +2,7 @@ import ScalaxbKeys._
 
 lazy val commonSettings = Seq(
   organization  := "com.mapr",
-  scalaVersion  := "2.10.4"
+  scalaVersion  := "2.11.7"
 )
 
 lazy val dispatchV = "0.11.2"
@@ -22,7 +22,8 @@ lazy val root = (project in file(".")).
       // Use 1 % after the group specification to denote that you don't care
       // about getting the scala-version specific package
       "org.apache.mahout" % "mahout-examples" % "0.10.0",
-      "net.databinder.dispatch" %% "dispatch-core" % dispatchV
+      "net.databinder.dispatch" %% "dispatch-core" % dispatchV,
+      "com.typesafe" % "config" % "1.3.0"
       )
   ).
   settings(scalaxbSettings: _*).
@@ -31,7 +32,7 @@ lazy val root = (project in file(".")).
     dispatchVersion in (Compile, scalaxb) := dispatchV,
     async in (Compile, scalaxb)           := true,
     packageName in (Compile, scalaxb)     := "generated",
-    logLevel in (Compile, scalaxb) := Level.Debug
+    logLevel in (Compile, scalaxb) := Level.Info
   ).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
   settings(ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) })
