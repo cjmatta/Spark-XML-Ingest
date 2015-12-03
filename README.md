@@ -26,5 +26,6 @@ $ sbt assembly
 ### Usage
 
 ```
-spark-submit --master [yarn-client|local[n]] --class com.mapr.xml2json.XML2Json ./target/scala-2.10/Spark-XML-Ingest-assembly-0.1-SNAPSHOT.jar
+$./src/main/resources/submit_job.sh
 ```
+

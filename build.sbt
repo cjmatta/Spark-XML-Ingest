@@ -5,7 +5,6 @@ lazy val commonSettings = Seq(
   scalaVersion  := "2.11.7"
 )
 
-lazy val dispatchV = "0.11.2"
 lazy val sparkVersion = "1.3.1"
 
 lazy val root = (project in file(".")).
@@ -22,17 +21,9 @@ lazy val root = (project in file(".")).
       // Use 1 % after the group specification to denote that you don't care
       // about getting the scala-version specific package
       "org.apache.mahout" % "mahout-examples" % "0.10.0",
-      "net.databinder.dispatch" %% "dispatch-core" % dispatchV,
-      "com.typesafe" % "config" % "1.3.0"
+      "org.json" % "json" % "20151123"
       )
   ).
   settings(scalaxbSettings: _*).
-  settings(
-    sourceGenerators in Compile += (scalaxb in Compile).taskValue,
-    dispatchVersion in (Compile, scalaxb) := dispatchV,
-    async in (Compile, scalaxb)           := true,
-    packageName in (Compile, scalaxb)     := "generated",
-    logLevel in (Compile, scalaxb) := Level.Info
-  ).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
   settings(ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) })
