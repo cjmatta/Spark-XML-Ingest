@@ -1,10 +1,21 @@
 ### Intro
 
-This is an example project using Spark to ingest XML data from a Hadoop compatible filesystem or directory (HDFS, S3, MapR-FS). Currently it simply writes the objects out to a text file.
+This is an example project using Spark to ingest XML data from a Hadoop compatible filesystem or directory (HDFS, S3, MapR-FS). The XML is ingested and converted to simple JSON objects and then written out as a text file.
+
+This project relies on the work of Douglas Crockford and his native Java XML->JSON library: https://github.com/douglascrockford/JSON-java
 
 ## Instructions
 
-Put all `xsd` files in `src/main/xsd` and [scalaxb](http://scalaxb.org) will generate Scala code for your objects. A sample `music.xsd` file is in there as well as sample `music.xml` files in `src/main/resources`
+Edit `src/main/resources/application.conf` to specify the start and end tags for the XML, which directory to watch, and which directory to write out to:
+```
+xmlingest {
+    watchdir="/tmp/in",
+    outputdir="/tmp/out",
+    xmlstart="<book>",
+    xmlend="</book>"
+}
+
+```
 
 ### Build
 
@@ -15,7 +26,5 @@ $ sbt assembly
 ### Usage
 
 ```
-spark-submit --master [yarn-client|local[n]] --class XMLTest ./target/scala-2.10/Spark-XML-Ingest-assembly-0.1-SNAPSHOT.jar [file:// | hdfs:// | mapr://]/directory/to/watch "<xmltag>" "</xmltag>"
+spark-submit --master [yarn-client|local[n]] --class com.mapr.xml2json.XML2Json ./target/scala-2.10/Spark-XML-Ingest-assembly-0.1-SNAPSHOT.jar
 ```
-
-The spark program will watch the specified directory for files to be moved or copied in, once they're in it will process them and write them out the filesystem at `/tmp/xmlout`

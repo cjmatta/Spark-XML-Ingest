@@ -1,3 +1,5 @@
+package com.mapr.xml2json
+
 import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -6,22 +8,25 @@ import org.apache.mahout.text.wikipedia.XmlInputFormat
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
+import org.json.XML
 import org.slf4j.LoggerFactory
 
-case class POSRetailTransaction(GUID: String)
-
-object XMLTest {
+object XML2Json {
   val logger = LoggerFactory.getLogger("XMLTest")
 
   def main(args: Array[String]) {
     val conf = ConfigFactory.load()
-    val WATCHDIR = conf.getString("xmlingest.watchdir")
-    val OUTDIR = conf.getString("xmlingest.outputdir")
-    val START = conf.getString("xmlingest.xmlstart")
-    val END = conf.getString("xmlingest.xmlend")
+    val settings = new Settings(conf)
+
+    val WATCHDIR = settings.watchdir
+    val OUTDIR = settings.output
+
+    val START = settings.xmlStartTag
+    val END = settings.xmlEndTag
 
     logger.info(f"Start: $START")
     logger.info(f"End: $END")
+
     val hadoopConf = new Configuration()
     hadoopConf.set("xmlinput.start", START)
     hadoopConf.set("xmlinput.end", END)
@@ -38,14 +43,11 @@ object XMLTest {
     }
     fStream.foreachRDD(rdd => logger.info(rdd.toDebugString))
 
-    val posLog: DStream[generated.RetailTransactionType] = fStream.map{ case(x, y) =>
-        logger.info(y.toString)
-        scalaxb.fromXML[generated.RetailTransactionType](scala.xml.XML.loadString(y.toString))
+    val posLog: DStream[String] = fStream.map{ case(x, y) =>
+        XML.toJSONObject(y.toString).toString
     }
 
-    val transaction = posLog.map(x => POSRetailTransaction(x.GUID))
-
-    transaction.foreachRDD(rdd => rdd.saveAsTextFile(OUTDIR))
+    posLog.foreachRDD(rdd => rdd.saveAsTextFile(OUTDIR))
 
     ssc.start()
     ssc.awaitTermination()
