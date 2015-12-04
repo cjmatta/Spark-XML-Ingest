@@ -47,7 +47,11 @@ object XML2Json {
         XML.toJSONObject(y.toString).toString
     }
 
-    posLog.foreachRDD(rdd => rdd.saveAsTextFile(OUTDIR + s"/${new java.util.Date().getTime}"))
+    posLog.foreachRDD(rdd =>
+      if(rdd.count() > 0) {
+        rdd.saveAsTextFile(OUTDIR + s"/${new java.util.Date().getTime}")
+      }
+    )
 
     ssc.start()
     ssc.awaitTermination()
