@@ -33,7 +33,7 @@ object XML2Json {
 
     val sparkConf = new SparkConf().setAppName("XMLTest")
     val sc = new SparkContext(sparkConf)
-    val ssc = new StreamingContext(sc, Seconds(5))
+    val ssc = new StreamingContext(sc, Seconds(settings.intervalSeconds))
 
     logger.info("Starting XMLTest App.")
 
@@ -41,12 +41,13 @@ object XML2Json {
       ssc.fileStream[LongWritable, Text, XmlInputFormat](
         WATCHDIR, xmlFilter _, newFilesOnly = true, conf = hadoopConf)
     }
-    fStream.foreachRDD(rdd => logger.info(rdd.toDebugString))
 
+//    Convert XML to json string
     val posLog: DStream[String] = fStream.map{ case(x, y) =>
         XML.toJSONObject(y.toString).toString
     }
 
+//    Write out our JSON files to disk
     posLog.foreachRDD(rdd =>
       if(rdd.count() > 0) {
         rdd.saveAsTextFile(OUTDIR + s"/${new java.util.Date().getTime}")
