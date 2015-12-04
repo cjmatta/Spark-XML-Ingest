@@ -12,7 +12,8 @@ xmlingest {
     watchdir="/tmp/in",
     outputdir="/tmp/out",
     xmlstart="<book>",
-    xmlend="</book>"
+    xmlend="</book>",
+    intervalSeconds=5
 }
 
 ```
