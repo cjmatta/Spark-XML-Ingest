@@ -1,5 +1,7 @@
 package com.mapr.xml2json
 
+import java.io.File
+
 import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -15,7 +17,8 @@ object XML2Json {
   val logger = LoggerFactory.getLogger("XMLTest")
 
   def main(args: Array[String]) {
-    val conf = ConfigFactory.load()
+    val configFile = new File(args(0))
+    val conf = ConfigFactory.parseFile(configFile).getConfig("xmlingest")
     val settings = new Settings(conf)
 
     val WATCHDIR = settings.watchdir
@@ -47,7 +50,7 @@ object XML2Json {
         XML.toJSONObject(y.toString).toString
     }
 
-    posLog.foreachRDD(rdd => rdd.saveAsTextFile(OUTDIR))
+    posLog.foreachRDD(rdd => rdd.saveAsTextFile(OUTDIR + s"_${new java.util.Date().getTime}"))
 
     ssc.start()
     ssc.awaitTermination()

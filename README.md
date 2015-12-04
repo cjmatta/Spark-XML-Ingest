@@ -6,7 +6,7 @@ This project relies on the work of Douglas Crockford and his native Java XML->JS
 
 ## Instructions
 
-Edit `src/main/resources/application.conf` to specify the start and end tags for the XML, which directory to watch, and which directory to write out to:
+Edit a copy of `src/main/resources/application.conf` to specify the start and end tags for the XML, which directory to watch, and which directory to write out to:
 ```
 xmlingest {
     watchdir="/tmp/in",
@@ -26,6 +26,6 @@ $ sbt assembly
 ### Usage
 
 ```
-$./src/main/resources/submit_job.sh
+$./src/main/resources/submit_job.sh /path/to/application.conf
 ```
 
