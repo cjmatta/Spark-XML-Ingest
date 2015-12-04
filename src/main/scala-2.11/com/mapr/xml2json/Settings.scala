@@ -12,5 +12,5 @@ class Settings(config: Config) {
   val output = config.getString("xmlingest.outputdir")
   val xmlStartTag = config.getString("xmlingest.xmlstart")
   val xmlEndTag = config.getString("xmlingest.xmlend")
-  val intervalSeconds = config.getInt("xmlingest.window")
+  val intervalSeconds = config.getInt("xmlingest.intervalSeconds")
 }
