@@ -21,7 +21,8 @@ lazy val root = (project in file(".")).
       // Use 1 % after the group specification to denote that you don't care
       // about getting the scala-version specific package
       "org.apache.mahout" % "mahout-examples" % "0.10.0",
-      "org.json" % "json" % "20151123"
+      "org.json" % "json" % "20151123",
+      "com.typesafe" % "config" % "1.3.0"
       )
   ).
   settings(scalaxbSettings: _*).
