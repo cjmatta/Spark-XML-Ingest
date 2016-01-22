@@ -1,4 +1,4 @@
-import ScalaxbKeys._
+
 
 lazy val commonSettings = Seq(
   organization  := "com.mapr",
@@ -22,7 +22,8 @@ lazy val root = (project in file(".")).
       // about getting the scala-version specific package
       "org.apache.mahout" % "mahout-examples" % "0.10.0",
       "org.json" % "json" % "20151123",
-      "com.typesafe" % "config" % "1.3.0"
+      "com.typesafe" % "config" % "1.3.0",
+      "com.googlecode.json-simple" % "json-simple" % "1.1"
       )
   ).
   settings(scalaxbSettings: _*).
