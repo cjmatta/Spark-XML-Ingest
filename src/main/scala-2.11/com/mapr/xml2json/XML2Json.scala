@@ -1,5 +1,9 @@
 package com.mapr.xml2json
 
+import java.io.ByteArrayInputStream
+import java.nio.charset.StandardCharsets
+import javax.xml.parsers.SAXParserFactory
+
 import com.typesafe.config.ConfigFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
@@ -8,8 +12,8 @@ import org.apache.mahout.text.wikipedia.XmlInputFormat
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.json.XML
 import org.slf4j.LoggerFactory
+import org.xml.sax.InputSource
 
 object XML2Json {
   val logger = LoggerFactory.getLogger("XMLTest")
@@ -17,6 +21,7 @@ object XML2Json {
   def main(args: Array[String]) {
     val conf = ConfigFactory.load()
     val settings = new Settings(conf)
+
 
     val WATCHDIR = settings.watchdir
     val OUTDIR = settings.output
@@ -44,7 +49,15 @@ object XML2Json {
 
 //    Convert XML to json string
     val posLog: DStream[String] = fStream.map{ case(x, y) =>
-        XML.toJSONObject(y.toString).toString
+        val parserFactory = SAXParserFactory.newInstance();
+        val parser = parserFactory.newSAXParser();
+        val handler = new MySaxParser();
+        handler.setLogger(logger)
+        parser.parse(new InputSource(new ByteArrayInputStream(
+//          remove all control characters from the xml and return a bytestream
+          y.toString.split('\n').map(_.trim.filter(_ >= ' ')).mkString.getBytes(StandardCharsets.UTF_8))
+        ), handler)
+        handler.getVal.toJSONString
     }
 
 //    Write out our JSON files to disk
